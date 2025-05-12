@@ -1,5 +1,6 @@
 import { userService } from '../services/userService.js';
 import { sendResponse } from '../utils/sendResponse.js';
+import { validateUser } from '../utils/validateUser.js';
 import { validateUUID } from '../utils/validateUUID.js';
 
 export const userController = {
@@ -22,5 +23,19 @@ export const userController = {
     }
 
     sendResponse(res, 200, user);
+  },
+
+  createUser: (req, res) => {
+    const validation = validateUser(req.body);
+
+    if (!validation.valid) {
+      return sendResponse(res, 400, {
+        message: 'Invalid user data',
+        errors: validation.errors
+      });
+    }
+
+    const newUser = userService.createUser(req.body);
+    sendResponse(res, 201, newUser);
   }
 };

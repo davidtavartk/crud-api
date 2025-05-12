@@ -16,5 +16,10 @@ export const usersDb = {
   getById: (id) => {
     const user = users.find((user) => user.id === id);
     return user ? { ...user } : null;
+  },
+
+  create: (user) => {
+    users.push(user);
+    return { ...user };
   }
 };

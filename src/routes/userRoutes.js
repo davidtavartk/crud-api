@@ -11,6 +11,11 @@ export const userRoutes = [
     path: /^\/api\/users\/([^/]+)$/,
     paramNames: ['userId'],
     handler: userController.getUserById
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/users$/,
+    handler: userController.createUser
   }
 ];
 
