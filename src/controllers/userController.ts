@@ -1,18 +1,24 @@
+import { IncomingMessage, ServerResponse } from 'node:http';
 import { userService } from '../services/userService.js';
 import { sendResponse } from '../utils/sendResponse.js';
-import { validateUser } from '../utils/validateUser.js';
 import { validateUUID } from '../utils/validateUUID.js';
+import { validateUser } from '../utils/validateUser.js';
+
+interface ExtendedIncomingMessage extends IncomingMessage {
+  params?: Record<string, string>;
+  body?: any;
+}
 
 export const userController = {
-  getAllUsers: (req, res) => {
+  getAllUsers: (req: ExtendedIncomingMessage, res: ServerResponse): void => {
     const users = userService.getAllUsers();
     sendResponse(res, 200, users);
   },
 
-  getUserById: (req, res) => {
-    const { userId } = req.params;
+  getUserById: (req: ExtendedIncomingMessage, res: ServerResponse): void => {
+    const userId = req.params?.userId;
 
-    if (!validateUUID(userId)) {
+    if (!userId || !validateUUID(userId)) {
       return sendResponse(res, 400, { message: 'User ID is invalid. Must be a valid UUID.' });
     }
 
@@ -25,8 +31,8 @@ export const userController = {
     sendResponse(res, 200, user);
   },
 
-  createUser: (req, res) => {
-    const validation = validateUser(req.body);
+  createUser: (req: ExtendedIncomingMessage, res: ServerResponse): void => {
+    const validation = validateUser(req.body || {});
 
     if (!validation.valid) {
       return sendResponse(res, 400, {
@@ -39,10 +45,10 @@ export const userController = {
     sendResponse(res, 201, newUser);
   },
 
-  updateUser: (req, res) => {
-    const { userId } = req.params;
+  updateUser: (req: ExtendedIncomingMessage, res: ServerResponse): void => {
+    const userId = req.params?.userId;
 
-    if (!validateUUID(userId)) {
+    if (!userId || !validateUUID(userId)) {
       return sendResponse(res, 400, { message: 'User ID is invalid. Must be a valid UUID.' });
     }
 
@@ -52,7 +58,7 @@ export const userController = {
       return sendResponse(res, 404, { message: `User with ID ${userId} not found.` });
     }
 
-    const validation = validateUser(req.body);
+    const validation = validateUser(req.body || {});
 
     if (!validation.valid) {
       return sendResponse(res, 400, {
@@ -65,10 +71,10 @@ export const userController = {
     sendResponse(res, 200, updatedUser);
   },
 
-  deleteUser: (req, res) => {
-    const { userId } = req.params;
+  deleteUser: (req: ExtendedIncomingMessage, res: ServerResponse): void => {
+    const userId = req.params?.userId;
 
-    if (!validateUUID(userId)) {
+    if (!userId || !validateUUID(userId)) {
       return sendResponse(res, 400, { message: 'User ID is invalid. Must be a valid UUID.' });
     }
 

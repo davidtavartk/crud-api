@@ -1,45 +1,6 @@
 import { runTest } from './utils.js';
 import { testCrudOperations, testInvalidUserCreation, testInvalidUuid } from './scenarios.js';
-import { spawn } from 'node:child_process';
-import { config } from '../src/config.js';
-
-const PORT = config.PORT || 4000;
-
-const startServer = () => {
-  console.log('Starting server process...');
-  return new Promise((resolve, reject) => {
-    const server = spawn('node', ['src/server.js'], {
-      env: { ...process.env, PORT },
-      stdio: 'pipe'
-    });
-
-    let started = false;
-
-    server.stdout.on('data', (data) => {
-      const output = data.toString();
-      console.log(`Server: ${output.trim()}`);
-      if (output.includes(`Server is running on port ${PORT}`)) {
-        console.log('Server started successfully!');
-        started = true;
-        setTimeout(() => resolve(server), 1000);
-      }
-    });
-
-    server.stderr.on('data', (data) => {
-      console.error(`Server Error: ${data}`);
-      if (!started) {
-        reject(new Error(`Server failed to start: ${data}`));
-      }
-    });
-
-    setTimeout(() => {
-      if (!started) {
-        console.log('Server startup timeout - proceeding anyway...');
-        resolve(server);
-      }
-    }, 5000);
-  });
-};
+import { startServer, PORT } from './helpers.js';
 
 const runTests = async () => {
   console.log('Starting tests...');

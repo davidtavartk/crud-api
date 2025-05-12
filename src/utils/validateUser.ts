@@ -1,5 +1,13 @@
-export const validateUser = (user) => {
-  const errors = [];
+import { ValidationResult } from '../types.js';
+
+interface UserData {
+  username?: any;
+  age?: any;
+  hobbies?: any;
+}
+
+export const validateUser = (user: UserData): ValidationResult => {
+  const errors: string[] = [];
 
   if (!user.username || typeof user.username !== 'string') {
     errors.push('Username is required and must be a string');

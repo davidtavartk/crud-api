@@ -1,6 +1,14 @@
+import { IncomingMessage, ServerResponse } from 'node:http';
 import { userController } from '../controllers/userController.js';
 
-export const userRoutes = [
+interface Route {
+  method: string;
+  path: RegExp;
+  paramNames?: string[];
+  handler: (req: IncomingMessage, res: ServerResponse) => void;
+}
+
+export const userRoutes: Route[] = [
   {
     method: 'GET',
     path: /^\/api\/users$/,

@@ -1,17 +1,18 @@
 import cluster from 'node:cluster';
+import { Worker } from 'node:cluster';
 import { availableParallelism } from 'node:os';
 import { config } from './config.js';
 import http from 'node:http';
 import process from 'node:process';
 
-const PORT = parseInt(config.PORT) || 4000;
+const PORT = parseInt(config.PORT as string) || 4000;
 const numCPUs = availableParallelism() - 1 || 1;
 
 if (cluster.isPrimary) {
   console.log(`Primary ${process.pid} is running`);
   console.log(`Setting up ${numCPUs} workers...`);
 
-  const workers = [];
+  const workers: Worker[] = [];
   for (let i = 0; i < numCPUs; i++) {
     const workerProcess = cluster.fork({ WORKER_PORT: PORT + i + 1 });
     workers.push(workerProcess);
@@ -32,18 +33,17 @@ if (cluster.isPrimary) {
     };
 
     const proxyReq = http.request(options, (proxyRes) => {
-      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      res.writeHead(proxyRes.statusCode!, proxyRes.headers);
       proxyRes.pipe(res, { end: true });
     });
 
     req.pipe(proxyReq, { end: true });
 
-    proxyReq.on('error', (err) => {
+    proxyReq.on('error', () => {
       res.writeHead(500);
-      res.end('Internal Server Error', err);
+      res.end('Internal Server Error');
     });
 
-    // Update worker index after request is sent
     currentWorkerIndex = (currentWorkerIndex + 1) % numCPUs;
   });
 
@@ -61,7 +61,7 @@ if (cluster.isPrimary) {
     }
   });
 } else {
-  const WORKER_PORT = parseInt(process.env.WORKER_PORT);
+  const WORKER_PORT = parseInt(process.env.WORKER_PORT as string);
 
   import('./server.js')
     .then((module) => {

@@ -1,8 +1,6 @@
 import http from 'node:http';
 import { randomUUID } from 'node:crypto';
-import { config } from '../src/config.js';
-
-const PORT = config.PORT || 4000;
+import { PORT } from './helpers.js';
 
 export const makeRequest = (method, path, body = null) => {
   return new Promise((resolve, reject) => {

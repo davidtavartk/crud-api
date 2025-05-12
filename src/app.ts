@@ -1,25 +1,33 @@
+import { IncomingMessage, ServerResponse } from 'node:http';
 import { routes } from './routes/index.js';
 import { parseUrl } from './utils/parseUrl.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { sendResponse } from './utils/sendResponse.js';
 
-export const requestHandler = async (req, res) => {
+interface ExtendedIncomingMessage extends IncomingMessage {
+  params?: Record<string, string>;
+  body?: any;
+}
+
+export const requestHandler = async (req: ExtendedIncomingMessage, res: ServerResponse) => {
   try {
     const parsedUrl = parseUrl(req);
 
-    if (['POST', 'PUT'].includes(req.method)) {
+    if (['POST', 'PUT'].includes(req.method!)) {
       await parseBody(req);
     }
 
-    const route = routes.find((r) => r.method === req.method && r.path.test(parsedUrl.pathname));
+    const route = routes.find((r) => r.method === req.method && r.path.test(parsedUrl.pathname!));
 
     if (route) {
-      if (route.path.exec(parsedUrl.pathname)) {
+      if (route.path.exec(parsedUrl.pathname!)) {
         req.params = {};
-        const matches = route.path.exec(parsedUrl.pathname);
+        const matches = route.path.exec(parsedUrl.pathname!);
         if (matches && route.paramNames) {
-          route.paramNames.forEach((name, i) => {
-            req.params[name] = matches[i + 1];
+          route.paramNames.forEach((name: string, i: number) => {
+            if (req.params) {
+              req.params[name] = matches[i + 1];
+            }
           });
         }
       }
@@ -37,11 +45,11 @@ export const requestHandler = async (req, res) => {
   }
 };
 
-const parseBody = (req) => {
+const parseBody = (req: ExtendedIncomingMessage): Promise<void> => {
   return new Promise((resolve, reject) => {
-    const bodyParts = [];
+    const bodyParts: Buffer[] = [];
 
-    req.on('data', (chunk) => {
+    req.on('data', (chunk: Buffer) => {
       bodyParts.push(chunk);
     });
 
@@ -59,7 +67,7 @@ const parseBody = (req) => {
       resolve();
     });
 
-    req.on('error', (err) => {
+    req.on('error', (err: Error) => {
       reject(err);
     });
   });
