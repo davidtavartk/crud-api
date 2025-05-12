@@ -1,13 +1,12 @@
-// src/app.js
 import { routes } from './routes/index.js';
 import { parseUrl } from './utils/parseUrl.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { sendResponse } from './utils/sendResponse.js';
 
 export const requestHandler = async (req, res) => {
   try {
     const parsedUrl = parseUrl(req);
 
-    // Add the body parser middleware
     if (['POST', 'PUT'].includes(req.method)) {
       await parseBody(req);
     }
@@ -15,7 +14,6 @@ export const requestHandler = async (req, res) => {
     const route = routes.find((r) => r.method === req.method && r.path.test(parsedUrl.pathname));
 
     if (route) {
-      // Extract route params if any
       if (route.path.exec(parsedUrl.pathname)) {
         req.params = {};
         const matches = route.path.exec(parsedUrl.pathname);
@@ -29,9 +27,11 @@ export const requestHandler = async (req, res) => {
       return route.handler(req, res);
     }
 
-    // Handle 404 Not Found
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ message: 'Resource not found' }));
+    const requestedPath = parsedUrl.pathname;
+    sendResponse(res, 404, {
+      message: `Resource not found: The requested endpoint '${requestedPath}' does not exist.`,
+      suggestion: 'Please check the API documentation for available endpoints.'
+    });
   } catch (err) {
     errorHandler(err, req, res);
   }
