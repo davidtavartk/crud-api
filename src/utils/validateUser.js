@@ -10,7 +10,7 @@ export const validateUser = (user) => {
   }
 
   if (!Array.isArray(user.hobbies)) {
-    errors.push('Hobbies must be an array');
+    errors.push('Hobbies is required and must be an array');
   } else {
     const invalidHobbies = user.hobbies.filter((hobby) => typeof hobby !== 'string');
     if (invalidHobbies.length > 0) {

@@ -15,7 +15,7 @@ export const userService = {
       id: uuidv4(),
       username: userData.username,
       age: userData.age,
-      hobbies: userData.hobbies || []
+      hobbies: Array.isArray(userData.hobbies) ? userData.hobbies : []
     };
 
     return usersDb.create(newUser);
@@ -26,7 +26,7 @@ export const userService = {
       id: userId,
       username: userData.username,
       age: userData.age,
-      hobbies: userData.hobbies || []
+      hobbies: Array.isArray(userData.hobbies) ? userData.hobbies : []
     };
 
     return usersDb.update(userId, updatedUser);
