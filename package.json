@@ -13,7 +13,8 @@
     "start:prod": "cross-env NODE_ENV=production npm run build && node --experimental-modules dist/bundle.js",
     "lint": "eslint src/**/*.js",
     "lint:fix": "eslint src/**/*.js --fix",
-    "test": "node tests/index.js"
+    "test": "node tests/index.js",
+    "start:multi": "node src/cluster.js"
   },
   "keywords": [],
   "author": "",
