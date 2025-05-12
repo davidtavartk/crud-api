@@ -5,18 +5,14 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 export const requestHandler = async (req, res) => {
   try {
-    // Parse the URL
     const parsedUrl = parseUrl(req);
-    
+
     // Add the body parser middleware
     if (['POST', 'PUT'].includes(req.method)) {
       await parseBody(req);
     }
-    
-    // Route handling
-    const route = routes.find(
-      (r) => r.method === req.method && r.path.test(parsedUrl.pathname)
-    );
+
+    const route = routes.find((r) => r.method === req.method && r.path.test(parsedUrl.pathname));
 
     if (route) {
       // Extract route params if any
@@ -37,20 +33,18 @@ export const requestHandler = async (req, res) => {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ message: 'Resource not found' }));
   } catch (err) {
-    // Handle server errors
     errorHandler(err, req, res);
   }
 };
 
-// Body parser middleware
 const parseBody = (req) => {
   return new Promise((resolve, reject) => {
     const bodyParts = [];
-    
+
     req.on('data', (chunk) => {
       bodyParts.push(chunk);
     });
-    
+
     req.on('end', () => {
       if (bodyParts.length) {
         const bodyString = Buffer.concat(bodyParts).toString();
@@ -64,7 +58,7 @@ const parseBody = (req) => {
       }
       resolve();
     });
-    
+
     req.on('error', (err) => {
       reject(err);
     });
