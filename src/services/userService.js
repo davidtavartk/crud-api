@@ -19,5 +19,20 @@ export const userService = {
     };
 
     return usersDb.create(newUser);
+  },
+
+  updateUser: (userId, userData) => {
+    const updatedUser = {
+      id: userId,
+      username: userData.username,
+      age: userData.age,
+      hobbies: userData.hobbies || []
+    };
+
+    return usersDb.update(userId, updatedUser);
+  },
+
+  deleteUser: (userId) => {
+    return usersDb.delete(userId);
   }
 };

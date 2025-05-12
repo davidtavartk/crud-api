@@ -16,6 +16,18 @@ export const userRoutes = [
     method: 'POST',
     path: /^\/api\/users$/,
     handler: userController.createUser
+  },
+  {
+    method: 'PUT',
+    path: /^\/api\/users\/([^/]+)$/,
+    paramNames: ['userId'],
+    handler: userController.updateUser
+  },
+  {
+    method: 'DELETE',
+    path: /^\/api\/users\/([^/]+)$/,
+    paramNames: ['userId'],
+    handler: userController.deleteUser
   }
 ];
 

@@ -21,5 +21,23 @@ export const usersDb = {
   create: (user) => {
     users.push(user);
     return { ...user };
+  },
+
+  update: (id, updatedUser) => {
+    const index = users.findIndex((user) => user.id === id);
+    if (index !== -1) {
+      users[index] = updatedUser;
+      return { ...updatedUser };
+    }
+    return null;
+  },
+
+  delete: (id) => {
+    const index = users.findIndex((user) => user.id === id);
+    if (index !== -1) {
+      users.splice(index, 1);
+      return true;
+    }
+    return false;
   }
 };
