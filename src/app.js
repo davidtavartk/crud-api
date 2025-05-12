@@ -1,7 +1,7 @@
 // src/app.js
 import { routes } from './routes/index.js';
-import { parseUrl } from './util/parseUrl.js';
-import { errorHandler } from './middleware/errorHandler.js';
+import { parseUrl } from './utils/parseUrl.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 export const requestHandler = async (req, res) => {
   try {
